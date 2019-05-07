@@ -1,0 +1,179 @@
+#include<iostream>
+#include<vector>
+#include<cmath>
+using namespace std;
+
+class Matrix {
+    int row, col;
+    vector <vector <double> > data;
+public:
+    Matrix (int row = 1, int col = 1): row(row), col(col),
+           data(vector <vector <double > > (row, vector<double> (col, 0.5))) {}
+    int getRow() {
+        return row;
+    }
+    int getCol() {
+        return col;
+    }
+    Matrix operator+(const Matrix & mx) {
+        Matrix new_mx(row, col);
+        for (int i = 0; i < row; i++)
+            for (int j = 0 ; j < col; j++)
+                new_mx.data[i][j] = data[i][j] + mx.data[i][j];
+        return new_mx;
+    }
+
+    Matrix operator-(const Matrix & mx) { 
+        Matrix new_mx(row, col);
+        for (int i = 0; i < row; i++)
+            for (int j = 0 ; j < col; j++)
+                new_mx.data[i][j] = data[i][j] - mx.data[i][j];
+        return new_mx;
+    }
+
+    Matrix operator-(vector<double> vc) { 
+        Matrix new_mx(vc.size(), col);
+        for (int i = 0; i < row; i++)
+            for (int j = 0 ; j < col; j++)
+                new_mx.data[i][j] = data[i][j] - vc[j];
+        return new_mx;
+    }
+ 
+    Matrix operator=(const Matrix & mx) {
+        for (int i = 0; i < row; i++)
+            for (int j = 0 ; j < col; j++)
+                data[i][j] = mx.data[i][j];
+        return *this;
+    }
+    Matrix operator=(std::vector<double> vc) {
+        for (int i = 0; i < vc.size(); i++) {
+            data[i][0] = vc[i];
+        }
+        return *this;
+    }
+    std::vector< double > operator[] (int i) {
+        return data[i];
+    }
+    Matrix operator*(const Matrix & mx) {
+        Matrix mx_new(row, mx.col);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < mx.col; j++) {
+                for (int k = 0; k < col; k++) {
+                    mx_new.data[i][j] += data[i][k] * mx.data[k][j];
+                }
+            }
+        }
+        return mx_new;
+    }
+
+    Matrix operator*(vector<double> vc) {
+        Matrix mx_new(vc.size(), row);
+        for (int i = 0; i < vc.size(); i++) {
+            for (int j = 0; j < row; j++) {
+                mx_new[i][j] = data[i][j] * vc[j];
+            }
+        }
+        return mx_new;
+    }
+ 
+    Matrix operator*(double num) {
+        Matrix mx(row, col);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0 ; j < col; j++) {
+                mx.data[i][j] = data[i][j] * num;
+            }
+        }
+        return mx;
+    }
+
+    Matrix operator/(double num) {
+        Matrix mx(row, col);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0 ; j < col; j++) {
+                mx.data[i][j] = data[i][j] / num;
+            }
+        }
+        return mx;
+    }
+ 
+    Matrix transpose() {
+        Matrix mx(col, row);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                mx.data[j][i] = data[i][j];
+            }
+        }
+        return mx;
+    }
+    friend std::istream& operator>>(istream &in, Matrix& mx) {
+        double num;
+        for (int i = 0; i < mx.row; i++) {
+            for (int j = 0; j < mx.col; j++) {
+                cin>>num;
+                mx.data[i][j] = num;
+            }
+        }
+        return in;
+    }
+    friend std::ostream& operator<<(ostream &out, Matrix mx) {
+        for (int i = 0; i < mx.row; i++) {
+            for (int j = 0; j < mx.col; j++) {
+                cout<<floor(mx.data[i][j])<<' ';
+            }
+            cout<<endl;
+        }
+        return out; 
+    }
+
+};
+/*class Model {
+    Matrix A;
+public:
+*/
+    double norm(Matrix mx) {
+        double sum = 0.0;
+        for (int i = 0; i < mx.getRow(); i++) {
+            for (int j = 0 ; j < mx.getCol(); j++) {
+               sum += mx[i][j] * mx[i][j];
+            }
+        }
+        sum = sqrt(sum); 
+        return sum;
+    }
+    Matrix train(Matrix xtrain, Matrix ytrain, Matrix K) {
+        double eps = 0.000018;
+        double h = 0.000095;
+        Matrix A_old(ytrain.getCol(), xtrain.getCol()),
+        A_new(ytrain.getCol(), xtrain.getCol());
+//        A_old = fill(A_new);
+        A_new = A_old;
+        do {
+            A_old = A_new;
+            Matrix A_sum(ytrain.getCol(), xtrain.getCol());
+            for (int i = 0; i < xtrain.getRow(); i++) {
+                Matrix x(xtrain.getCol(), 1);
+                x = xtrain[i];
+                Matrix y(ytrain.getCol(), 1);
+                y = ytrain[i];
+                A_sum = A_sum + ((A_old * x - y) * x.transpose());
+            }
+            A_sum = A_sum * 0.0235 * h;
+            A_new = A_old - A_sum; 
+        } while (abs(norm(A_new - A_old)) > eps);
+        return A_new;
+    }
+
+//};
+
+int main() {
+    Matrix X(6, 7), Y(6, 1), K(3, 7);  
+    cin>>X;
+    cin>>Y;
+    cin>>K;
+    Matrix A = train(X, Y, K);
+    Matrix B = A * K.transpose();
+    cout<<endl<<"answer: "<<endl;
+    cout<<B;
+    return 0;
+}
+    
