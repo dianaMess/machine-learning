@@ -1,11 +1,13 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<fstream>
 using namespace std;
 
 class Matrix {
     int row, col;
     vector <vector <double> > data;
+//    string filename;
 public:
     Matrix (int row = 1, int col = 1): row(row), col(col),
            data(vector <vector <double > > (row, vector<double> (col, 0.5))) {}
@@ -107,6 +109,8 @@ public:
     }
     friend std::istream& operator>>(istream &in, Matrix& mx) {
         double num;
+//        string f = filename;
+//        std::ifstream file("test2.txt");  
         for (int i = 0; i < mx.row; i++) {
             for (int j = 0; j < mx.col; j++) {
                 cin>>num;
@@ -126,15 +130,17 @@ public:
     }
 
 };
-//class Model {
-//    Matrix xtrain, ytrain;
-//public:
-//    Model (Matrix X, Matrix Y) { xtrain = X; ytrain = Y;}
-//    void set_Matrix(Matrix X, Matrix Y) {
-//        xtrain = X;
-//        ytrain = Y;
-//        return;
-//    } 
+class Neuron {
+    int n_size, m_size, h;
+    Matrix xtrain;
+    Matrix ytrain;
+public:
+    Neuron (int n_size, int m_size, int h) {
+        Neuron::n_size = n_size;
+        Neuron::m_size = m_size;
+        Neuron::h = h;
+    }
+    Neuron (Matrix X, Matrix Y) { Neuron::xtrain = X; Neuron::ytrain = Y;}
     double norm(Matrix mx) {
         double sum = 0.0;
         for (int i = 0; i < mx.getRow(); i++) {
@@ -145,13 +151,15 @@ public:
         sum = sqrt(sum); 
         return sum;
     }
-    Matrix train(Matrix xtrain, Matrix ytrain, Matrix K) {
-        double eps = 0.000018;
+
+    Matrix train(Matrix xtrain, Matrix ytrain) {
+        double eps = 0.000020;
 //        double h = 0.000095;
         double h = 0.00000223;
         Matrix A_old(ytrain.getCol(), xtrain.getCol()),
         A_new(ytrain.getCol(), xtrain.getCol());
         A_new = A_old;
+        int count = 0;
         do {
             A_old = A_new;
             Matrix A_sum(ytrain.getCol(), xtrain.getCol());
@@ -164,19 +172,21 @@ public:
             }
             A_sum = A_sum * h;
             A_new = A_old - A_sum; 
+            count++;
         } while (abs(norm(A_new - A_old)) > eps);
         return A_new;
     }
-//};
+};
 
-int main() {
-    Matrix X(8, 7), Y(8, 1), K(5, 7);  
+int main(int argc, char * argv[]) {
+    Matrix X(8, 7), Y(8, 1), K(5, 7);
+//    std::ifstream file("test2.txt");  
     cin>>X;
+//    cout<<X;
     cin>>Y;
-//    Model model(X, Y);
-//    model.set_Matrix(X, Y);
+    Neuron model(X, Y);
     cin>>K;
-    Matrix A = train(X, Y, K);
+    Matrix A = model.train(X, Y);
     Matrix B = A * K.transpose();
     cout<<endl<<"answer: "<<endl;
     cout<<B;
