@@ -2,7 +2,7 @@
 ### How to compile:  
 #### make install
 ### How to run:  
-#### ./1   
+#### ./1   test2.txt answer.txt new_test.txt
 Program was tested on Graduate admissions dataset  
 The dataset contains several parameters which are considered important during the application for Masters Programs.  
 The parameters included are : 1. GRE Scores ( out of 340 ) 2. TOEFL Scores ( out of 120 ) 3. University Rating ( out of 5 )  
