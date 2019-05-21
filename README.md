@@ -2,7 +2,7 @@
 ### How to compile:  
 #### make install
 ### How to run:  
-#### ./1   test2.txt answer.txt new_test.txt
+#### ./1   example/test2.txt example/answer.txt example/new_test.txt  example/right_asnwer.txt
 Program was tested on Graduate admissions dataset  
 The dataset contains several parameters which are considered important during the application for Masters Programs.  
 The parameters included are : 1. GRE Scores ( out of 340 ) 2. TOEFL Scores ( out of 120 ) 3. University Rating ( out of 5 )  
@@ -24,4 +24,6 @@ The parameters included are : 1. GRE Scores ( out of 340 ) 2. TOEFL Scores ( out
 333     118     5       5       5       9.35    1  
 339     114     5       4       4.5     9.76    1  
 answer:  
-0.492857 0.657473 0.721505 0.722789 0.864715 
+0.492857 0.657473 0.721505 0.722789 0.864715  
+right answer:  
+0.47 0.56 0.84 0.92 0.96  
