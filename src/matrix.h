@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<iomanip>
 #include<fstream>
 using namespace std;
 
@@ -39,7 +40,7 @@ public:
     friend std::ostream& operator<<(ostream &out, Matrix mx) {
         for (int i = 0; i < mx.row; i++) {
             for (int j = 0; j < mx.col; j++) {
-                cout<<mx.data[i][j]<<' ';
+                cout<<std::setprecision(2)<<mx.data[i][j]<<' ';
             }
             cout<<endl;
         }
